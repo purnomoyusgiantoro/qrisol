@@ -30,9 +30,16 @@ export default function Header() {
 
         {/* Brand Text */}
         <div className="flex flex-col justify-center">
-          <span className="text-[18px] font-extrabold text-primary tracking-tight leading-none">QRISol</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[18px] font-extrabold text-primary tracking-tight leading-none">QRISol</span>
+            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-success/10 rounded-md border border-success/20">
+              <span className="w-1 h-1 bg-success rounded-full animate-pulse"></span>
+              <span className="text-[7px] font-black text-success tracking-tighter">DEVNET</span>
+            </div>
+          </div>
           <span className="text-[10px] font-bold text-on-surface-variant opacity-60">Solana Pay</span>
         </div>
+
       </div>
 
       {/* Wallet Indicator */}
@@ -47,9 +54,13 @@ export default function Header() {
         <span className="text-[11px] font-bold tracking-wide">
           {connected && publicKey ? formatAddress(publicKey.toBase58()) : 'CONNECT'}
         </span>
-        <span className={`material-symbols-outlined !text-[18px] ${connected ? 'text-primary' : 'text-white'}`}>
-          account_balance_wallet
-        </span>
+        {connected && <span className="w-1.5 h-1.5 bg-success rounded-full"></span>}
+        {!connected && (
+          <span className="material-symbols-outlined !text-[16px] text-white">
+            account_balance_wallet
+          </span>
+        )}
+
       </button>
     </header>
   )

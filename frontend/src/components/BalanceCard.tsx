@@ -41,30 +41,33 @@ export default function BalanceCard() {
     }
   }, [publicKey, connected, connection])
 
-  const idrBalance = balance !== null ? (balance * SOL_TO_IDR).toLocaleString('id-ID') : '0'
+  const idrBalance = balance !== null 
+    ? Math.floor(balance * SOL_TO_IDR).toLocaleString('id-ID') 
+    : '0'
 
   return (
     <section className="mb-6">
-      <div className="solana-gradient rounded-xl p-5 shadow-lg relative overflow-hidden group">
+      <div className="solana-gradient rounded-xl p-4 shadow-lg relative overflow-hidden group">
         {/* Subtle Glow */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
         
         <div className="relative z-10">
-          <p className="text-white/70 text-[11px] font-bold uppercase tracking-widest mb-1">Total Balance</p>
-          <h1 className="text-white text-[28px] font-bold mb-1 leading-tight tracking-tight">
+          <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mb-0.5">Total Balance</p>
+          <h1 className="text-white text-[22px] font-bold mb-1 leading-tight tracking-tight">
             {loading ? '...' : `Rp ${idrBalance}`}
           </h1>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 opacity-90">
             <img 
               alt="Solana Logo" 
-              className="w-4 h-4 brightness-0 invert" 
+              className="w-3.5 h-3.5 brightness-0 invert" 
               src="https://cryptologos.cc/logos/solana-sol-logo.png?v=024" 
             />
-            <span className="text-white/80 text-[13px] font-medium">
+            <span className="text-white/80 text-[11px] font-medium">
               ≈ {balance !== null ? balance.toFixed(4) : '0.0000'} SOL
             </span>
           </div>
         </div>
+
 
         {/* Quick Action Bar */}
         <div className="mt-6 flex justify-between gap-2">

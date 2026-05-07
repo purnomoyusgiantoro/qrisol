@@ -113,7 +113,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-surface">
+    <div className="flex flex-col h-full bg-surface animate-page-fade">
       <header className="flex justify-between items-center w-full px-5 py-2 h-14 bg-surface border-b border-outline-variant/30">
         <button 
           onClick={() => navigate('/')}

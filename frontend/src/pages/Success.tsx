@@ -20,7 +20,7 @@ export default function Success() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-surface">
+    <div className="flex flex-col h-full bg-surface animate-page-fade">
       {/* Header */}
       <header className="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-5 py-2 h-14">
         <span className="text-[18px] font-bold text-primary">QRISol</span>
@@ -50,7 +50,7 @@ export default function Success() {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Amount Paid</p>
-              <h2 className="text-[22px] font-bold text-on-surface tracking-tight">Rp {data.amount.toLocaleString('id-ID')}</h2>
+              <h2 className="text-[22px] font-bold text-on-surface tracking-tight">Rp {Math.floor(data.amount).toLocaleString('id-ID')}</h2>
               <div className="mt-2 inline-flex items-center gap-1.5 bg-primary/5 text-primary px-3 py-1 rounded-full font-bold text-[10px]">
                 <span className="material-symbols-outlined !text-[12px]">bolt</span>
                 {data.solAmount.toFixed(6)} SOL
