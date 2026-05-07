@@ -56,7 +56,7 @@ export default function Scanner() {
   const processQR = async (source: string) => {
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:3001/api/parse-qris', {
+      const response = await fetch('/api/parse-qris', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageUrl: source }),
