@@ -50,7 +50,7 @@ export async function notifyPaymentSettlement(params: {
  * Check payment status from mock backend.
  */
 export async function checkPaymentStatus(
-  txHash: string
+  _txHash: string
 ): Promise<{ status: 'pending' | 'confirmed' | 'settled' | 'failed' }> {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 300))

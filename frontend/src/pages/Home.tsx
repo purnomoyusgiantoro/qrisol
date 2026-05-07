@@ -4,7 +4,6 @@ import BalanceCard from '../components/BalanceCard'
 
 export default function Home() {
   const { connected } = useWallet()
-  const navigate = useNavigate()
 
   const transactions = [
     { id: 1, name: 'Kopi Kenangan', date: 'Today, 14:20', amount: '-Rp 45.000', status: 'Success', type: 'send' },
