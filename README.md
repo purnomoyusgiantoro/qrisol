@@ -1,73 +1,73 @@
-# React + TypeScript + Vite
+# 🚀 QRISol: The Web3 Gateway for QRIS Payments
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Scan QRIS, Pay with Solana.**  
+QRISol is a next-generation payment bridge that allows users to pay any standard Indonesian QRIS merchant using Solana (SOL) instantly. Built for the **Colosseum Frontier Hackathon**, it features an innovative "Smart Routing" mechanism to ensure users always get the best conversion rates.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ⚡ Quick Start (Run in < 1 Minute)
 
-## React Compiler
+Follow these steps to get the project running locally:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. **Clone the repository**
+2. **Install dependencies** (from the root folder):
+   ```bash
+   npm install
+   ```
+3. **Start both Frontend & Backend**:
+   ```bash
+   npm run dev
+   ```
+4. **Access the App**:
+   *   **Frontend**: `http://localhost:5173`
+   *   **Backend**: `http://localhost:3001`
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🌟 Key Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. Smart Routing Algorithm
+QRISol doesn't just convert SOL to IDR; it automatically scouts the best rates from multiple exchange partners (**Tokocrypto**, **Indodax**, **Pintu**) in real-time. It selects the partner with the lowest fees and best liquidity, hiding the complexity from the user for a seamless "Scan & Pay" experience.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 2. Universal QRIS Scanner
+Integrated with a powerful OCR backend, QRISol can parse standard QRIS codes from street vendors, cafes, and major retailers. It extracts merchant data and amount details automatically.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 3. Solana Devnet Integration
+Fully functional blockchain integration using `@solana/web3.js` and `@solana/wallet-adapter`. Experience real-time transaction confirmation on the Solana Devnet.
+
+### 4. Premium Fintech UI
+A meticulously crafted mobile-first interface designed with **Material 3** aesthetics, featuring smooth animations, glassmorphism elements, and a high-fidelity "Bento-style" receipt system.
+
+---
+
+## 🛠 Tech Stack
+
+*   **Frontend**: React + TypeScript + Vite + TailwindCSS
+*   **Blockchain**: Solana Web3.js + Wallet Adapter (Devnet)
+*   **Backend**: Node.js + Express (QRIS Parsing & Smart Routing Logic)
+*   **Design**: Custom Design System with Material Symbols
+
+---
+
+## 📂 Project Structure
+
+```
+qrisol/
+├── frontend/        # React Application (UI/UX)
+├── backend/         # Express Server (API & Logic)
+├── package.json     # Monorepo configuration
+└── README.md        # You are here!
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🏆 Hackathon Credits
+Developed by **Team QRISol** for the **Colosseum Frontier Hackathon 2026**.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Team Members:**
+*   **Purnomo** (Lead Dev & Blockchain)
+*   **Indra** (UI/UX Designer)
+*   **Fajar** (Backend & AI)
+
+---
+*Note: This project is currently running on Solana Devnet. Ensure your wallet is connected to Devnet before testing.*
