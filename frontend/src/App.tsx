@@ -7,13 +7,12 @@ import Checkout from './pages/Checkout'
 import Success from './pages/Success'
 import Send from './pages/Send'
 import Receive from './pages/Receive'
-import PartnerSelect from './pages/PartnerSelect'
 
 function App() {
   const location = useLocation()
   
   // Hide global chrome (Header/BottomNav) on transactional pages
-  const hideChrome = ['/scan', '/checkout', '/success', '/send', '/receive', '/partner-select'].includes(location.pathname)
+  const hideChrome = ['/scan', '/checkout', '/success', '/send', '/receive'].includes(location.pathname)
 
   return (
     <div className="mobile-container">
@@ -27,7 +26,6 @@ function App() {
           <Route path="/success" element={<Success />} />
           <Route path="/send" element={<Send />} />
           <Route path="/receive" element={<Receive />} />
-          <Route path="/partner-select" element={<PartnerSelect />} />
         </Routes>
       </main>
 

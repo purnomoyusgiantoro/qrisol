@@ -3,12 +3,11 @@
  * 
  * Handles SOL → USDC swaps using the Jupiter Aggregator V6 API.
  * This enables converting crypto to stablecoin for merchant settlement.
- * 
- * To be fully implemented by Purnomo in Sprint 3.
  */
 
 // Jupiter V6 API Endpoint
 const JUPITER_API = 'https://quote-api.jup.ag/v6'
+const JUPITER_PRICE_API = 'https://api.jup.ag/price/v2' // Using the newer price API endpoint if available
 
 // Token Mints
 const SOL_MINT = 'So11111111111111111111111111111111111111112'
@@ -84,21 +83,45 @@ export async function buildSwapTransaction(
 }
 
 /**
- * Get current SOL/USDC price from Jupiter.
+ * Get current SOL/USDC price from Jupiter with fallback to CoinGecko.
  */
 export async function getSOLPrice(): Promise<number | null> {
+  // 1. Try Jupiter Price API (v2)
   try {
-    const response = await fetch(
-      `https://price.jup.ag/v6/price?ids=${SOL_MINT}`
-    )
-
-    if (!response.ok) return null
-
-    const data = await response.json()
-    return data.data?.[SOL_MINT]?.price || null
-  } catch {
-    return null
+    const response = await fetch(`${JUPITER_PRICE_API}?ids=${SOL_MINT}`)
+    if (response.ok) {
+      const data = await response.json()
+      const price = data.data?.[SOL_MINT]?.price
+      if (price) return parseFloat(price)
+    }
+  } catch (err) {
+    console.warn('Jupiter Price API failed, trying fallback...', err)
   }
+
+  // 2. Try Jupiter Price API (v1/Legacy)
+  try {
+    const response = await fetch(`https://price.jup.ag/v6/price?ids=${SOL_MINT}`)
+    if (response.ok) {
+      const data = await response.json()
+      const price = data.data?.[SOL_MINT]?.price
+      if (price) return parseFloat(price)
+    }
+  } catch (err) {
+    console.warn('Jupiter Price V6 API failed, trying CoinGecko...', err)
+  }
+
+  // 3. Fallback to CoinGecko
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')
+    if (response.ok) {
+      const data = await response.json()
+      return data.solana?.usd || null
+    }
+  } catch (err) {
+    console.error('All Price APIs failed:', err)
+  }
+
+  return null
 }
 
 /**
@@ -106,13 +129,18 @@ export async function getSOLPrice(): Promise<number | null> {
  */
 export async function getUSDToIDR(): Promise<number> {
   try {
+    // Try primary exchange rate API
     const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD')
-    if (!response.ok) return 16000 // Fallback
-    const data = await response.json()
-    return data.rates?.IDR || 16000
+    if (response.ok) {
+      const data = await response.json()
+      return data.rates?.IDR || 16100
+    }
+    
+    // Fallback if needed
+    return 16100 
   } catch (error) {
-    console.error('Failed to fetch USD/IDR rate:', error)
-    return 16000
+    console.warn('Failed to fetch USD/IDR rate, using fallback:', error)
+    return 16100
   }
 }
 
@@ -126,10 +154,17 @@ export async function getSOLPriceIDR(): Promise<number | null> {
       getUSDToIDR()
     ])
     
-    if (!solUsd) return null
-    return solUsd * usdIdr
+    if (!solUsd) {
+      console.error('Could not fetch SOL price in USD')
+      return null
+    }
+    
+    const priceIDR = solUsd * usdIdr
+    console.log(`Current SOL Price: $${solUsd} (Rate: ${usdIdr}) = Rp ${priceIDR.toLocaleString('id-ID')}`)
+    return priceIDR
   } catch (error) {
     console.error('Failed to calculate SOL/IDR price:', error)
     return null
   }
 }
+

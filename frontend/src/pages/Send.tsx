@@ -48,7 +48,7 @@ export default function Send() {
       navigate('/success', { 
         state: { 
           merchantName: `Sent to: ${address.slice(0, 4)}...${address.slice(-4)}`,
-          amount: parseFloat(amount) * 2300000, 
+          amount: parseFloat(amount) * 2450000, 
           solAmount: parseFloat(amount),
           txHash: signature
         } 
@@ -110,7 +110,7 @@ export default function Send() {
             <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-primary">SOL</span>
           </div>
           <p className="text-caption text-on-surface-variant ml-1 font-medium">
-            ≈ Rp {(parseFloat(amount || '0') * 2300000).toLocaleString('id-ID')}
+            ≈ Rp {(parseFloat(amount || '0') * 2450000).toLocaleString('id-ID')}
           </p>
         </div>
       </main>

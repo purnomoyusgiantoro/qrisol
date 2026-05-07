@@ -5,6 +5,7 @@ interface SuccessData {
   amount: number
   solAmount: number
   txHash: string
+  partner?: string
 }
 
 export default function Success() {
@@ -29,77 +30,84 @@ export default function Success() {
       </header>
 
       {/* Main Success Canvas */}
-      <div className="flex-1 overflow-y-auto px-margin-edge pt-stack-lg flex flex-col items-center">
+      <div className="flex-1 overflow-y-auto px-margin-edge pt-8 flex flex-col items-center">
         {/* Celebration Icon */}
-        <div className="relative w-32 h-32 mb-stack-lg mt-4 animate-scale-in">
+        <div className="relative w-24 h-24 mb-6 mt-2 animate-scale-in">
           <div className="absolute inset-0 bg-tertiary/10 rounded-full scale-125 blur-2xl animate-pulse"></div>
-          <div className="relative flex items-center justify-center w-full h-full bg-tertiary-container rounded-full shadow-xl border-4 border-white">
-            <span className="material-symbols-outlined text-on-tertiary !text-[72px] fill-icon">check_circle</span>
+          <div className="relative flex items-center justify-center w-full h-full bg-tertiary-container rounded-full shadow-lg border-2 border-white">
+            <span className="material-symbols-outlined text-on-tertiary !text-[48px] fill-icon">check_circle</span>
           </div>
         </div>
 
         {/* Title & Status */}
-        <div className="text-center mb-stack-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          <h1 className="text-headline-md font-bold text-on-surface mb-1">Payment Successful!</h1>
-          <p className="text-body-base text-on-surface-variant font-medium">Transaction processed via Solana</p>
+        <div className="text-center mb-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <h1 className="text-[20px] font-bold text-on-surface mb-0.5">Payment Successful</h1>
+          <p className="text-[12px] text-on-surface-variant font-medium">Processed via Solana Blockchain</p>
         </div>
 
         {/* Receipt Card (Bento Element) */}
-        <div className="w-full bg-white rounded-3xl p-6 border border-outline-variant/50 shadow-md space-y-5 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-          <div className="flex justify-between items-start">
+        <div className="w-full bg-white rounded-[28px] p-6 border border-outline-variant/30 shadow-sm space-y-5 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <div className="flex justify-between items-center">
             <div>
-              <p className="text-label-sm font-bold text-on-surface-variant mb-1">Total Payment</p>
-              <h2 className="text-[24px] font-bold text-on-surface leading-none">Rp {data.amount.toLocaleString('id-ID')}</h2>
-              <div className="mt-2 inline-flex items-center gap-1 bg-tertiary/10 text-tertiary px-3 py-1 rounded-full font-bold text-[11px]">
-                <span className="material-symbols-outlined !text-[14px]">bolt</span>
+              <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Amount Paid</p>
+              <h2 className="text-[22px] font-bold text-on-surface tracking-tight">Rp {data.amount.toLocaleString('id-ID')}</h2>
+              <div className="mt-2 inline-flex items-center gap-1.5 bg-primary/5 text-primary px-3 py-1 rounded-full font-bold text-[10px]">
+                <span className="material-symbols-outlined !text-[12px]">bolt</span>
                 {data.solAmount.toFixed(6)} SOL
               </div>
             </div>
-            <div className="bg-surface-container-highest p-3 rounded-2xl">
-              <span className="material-symbols-outlined text-primary !text-[32px]">storefront</span>
+            <div className="bg-surface-container-highest w-12 h-12 flex items-center justify-center rounded-2xl">
+              <span className="material-symbols-outlined text-primary !text-[24px]">storefront</span>
             </div>
           </div>
 
-          <div className="pt-5 border-t border-dashed border-outline-variant/50">
-            <div className="flex justify-between mb-3">
-              <span className="text-body-base text-on-surface-variant">Recipient</span>
-              <span className="text-body-base font-bold text-on-surface">{data.merchantName}</span>
+          <div className="pt-5 border-t border-dashed border-outline-variant/50 space-y-3.5">
+            <div className="flex justify-between items-center">
+              <span className="text-[12px] text-on-surface-variant">Merchant</span>
+              <span className="text-[12px] font-bold text-on-surface">{data.merchantName}</span>
             </div>
-            <div className="flex justify-between mb-3">
-              <span className="text-body-base text-on-surface-variant">Transaction ID</span>
-              <span className="text-body-base font-bold text-primary truncate max-w-[120px]">{data.txHash}</span>
+            {data.partner && (
+              <div className="flex justify-between items-center">
+                <span className="text-[12px] text-on-surface-variant">Exchange Partner</span>
+                <span className="text-[12px] font-bold text-primary">{data.partner}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center">
+              <span className="text-[12px] text-on-surface-variant">Transaction ID</span>
+              <span className="text-[12px] font-mono font-medium text-on-surface-variant truncate max-w-[100px] bg-surface px-1.5 py-0.5 rounded">{data.txHash}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-body-base text-on-surface-variant">Method</span>
-              <span className="text-body-base font-bold text-on-surface">QRIS - Solana Pay</span>
+            <div className="flex justify-between items-center">
+              <span className="text-[12px] text-on-surface-variant">Method</span>
+              <span className="text-[12px] font-bold text-on-surface">SOL → IDR (Smart Route)</span>
             </div>
           </div>
         </div>
 
         {/* Transaction Status Chip */}
-        <div className="mt-stack-lg flex justify-center animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-          <div className="flex items-center gap-2 bg-tertiary/10 text-tertiary py-1.5 px-4 rounded-full border border-tertiary/20">
-            <span className="material-symbols-outlined !text-[18px]">verified</span>
-            <span className="text-label-sm font-bold">Confirmed on Blockchain</span>
+        <div className="mt-8 flex justify-center animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+          <div className="flex items-center gap-2 bg-success/5 text-success py-1.5 px-4 rounded-full border border-success/10">
+            <span className="material-symbols-outlined !text-[16px]">verified</span>
+            <span className="text-[11px] font-bold">Confirmed on Network</span>
           </div>
         </div>
       </div>
 
       {/* Sticky Bottom Action Area */}
-      <footer className="p-margin-edge bg-surface border-t border-outline-variant">
+      <footer className="p-6 bg-surface border-t border-outline-variant/50">
         <button 
           onClick={() => navigate('/')}
-          className="w-full bg-primary text-white py-4 rounded-2xl font-bold text-headline-md shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center justify-center gap-2"
+          className="w-full h-14 bg-primary text-white rounded-2xl font-bold text-[16px] shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center justify-center gap-2"
         >
-          <span>DONE (BACK HOME)</span>
+          <span>Return to Home</span>
         </button>
         <div className="flex justify-center mt-4">
-          <button className="text-primary font-bold text-label-sm flex items-center gap-2 hover:underline">
+          <button className="text-primary font-bold text-[12px] flex items-center gap-2 hover:opacity-70">
             <span className="material-symbols-outlined !text-[16px]">share</span>
             Share Receipt
           </button>
         </div>
       </footer>
+
     </div>
   )
 }

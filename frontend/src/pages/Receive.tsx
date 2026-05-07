@@ -19,50 +19,53 @@ export default function Receive() {
   return (
     <div className="flex flex-col h-full bg-surface">
       {/* Header */}
-      <header className="flex justify-between items-center w-full px-5 py-2 h-14 bg-white border-b border-outline-variant/30">
+      <header className="flex justify-between items-center w-full px-5 py-2 h-14 bg-surface border-b border-outline-variant/30">
         <button onClick={() => navigate('/')} className="text-primary flex items-center gap-1">
-          <span className="material-symbols-outlined">arrow_back</span>
-          <span className="font-bold text-label-sm">Back</span>
+          <span className="material-symbols-outlined !text-[18px]">arrow_back</span>
+          <span className="font-bold text-[12px]">Back</span>
         </button>
-        <h1 className="text-body-base font-bold text-on-surface">Receive Funds</h1>
+        <h1 className="text-[16px] font-bold text-on-surface">Receive SOL</h1>
         <div className="w-12"></div>
       </header>
 
-      <main className="flex-1 p-5 flex flex-col items-center justify-start gap-5 pt-4 overflow-y-auto">
+      <main className="flex-1 p-6 flex flex-col items-center justify-start gap-6 pt-4 overflow-y-auto">
         <div className="text-center">
-          <h2 className="text-[18px] font-bold text-on-surface mb-1">Scan QR Code</h2>
-          <p className="text-[12px] text-on-surface-variant">Send SOL to this address</p>
+          <h2 className="text-[16px] font-bold text-on-surface mb-0.5">Wallet QR Code</h2>
+          <p className="text-[11px] text-on-surface-variant font-medium">Use this to receive Solana funds</p>
         </div>
 
         {/* QR Code Container */}
-        <div className="bg-white p-4 rounded-2xl shadow-lg border border-outline-variant/50 relative group">
+        <div className="bg-white p-5 rounded-[32px] shadow-sm border border-outline-variant/30 relative">
           {address ? (
-            <img src={qrUrl} alt="Wallet QR" className="w-40 h-40 rounded-lg" />
+            <img src={qrUrl} alt="Wallet QR" className="w-44 h-44 rounded-xl" />
           ) : (
-            <div className="w-40 h-40 bg-surface-container rounded-lg flex items-center justify-center">
-              <p className="text-[10px] text-center px-4 opacity-50 font-bold uppercase">Connect Wallet</p>
+            <div className="w-44 h-44 bg-surface-container rounded-xl flex items-center justify-center">
+              <p className="text-[10px] text-center px-4 opacity-50 font-bold uppercase tracking-widest">Connect Wallet</p>
             </div>
           )}
         </div>
 
         {/* Address Display */}
-        <div className="w-full max-w-[300px] bg-white p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col items-center gap-2">
-          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest opacity-70">Wallet Address</p>
-          <p className="text-[11px] font-mono text-primary break-all text-center leading-tight mb-2">
-            {address || 'Not Connected'}
-          </p>
+        <div className="w-full bg-white p-5 rounded-[28px] border border-outline-variant/20 shadow-sm flex flex-col items-center gap-3">
+          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest opacity-60">Your Public Address</p>
+          <div className="bg-surface px-3 py-2.5 rounded-xl border border-outline-variant/10 w-full">
+            <p className="text-[11px] font-mono text-on-surface break-all text-center leading-tight">
+              {address || 'Wallet not connected'}
+            </p>
+          </div>
           <button 
             onClick={copyToClipboard}
             disabled={!address}
-            className="w-full h-11 bg-primary text-white rounded-xl font-bold text-label-sm flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-50"
+            className="w-full h-12 bg-primary text-white rounded-2xl font-bold text-[13px] flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-50"
           >
             <span className="material-symbols-outlined !text-[18px]">
               {copied ? 'check_circle' : 'content_copy'}
             </span>
-            {copied ? 'COPIED SUCCESSFULLY' : 'COPY ADDRESS'}
+            {copied ? 'Copied Successfully' : 'Copy Address'}
           </button>
         </div>
       </main>
+
 
       {/* Safety Warning */}
       <footer className="p-4 pb-6 text-center">

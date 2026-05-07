@@ -10,8 +10,8 @@ export default function BalanceCard() {
   const [balance, setBalance] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Mock IDR conversion (1 SOL ≈ 2.3M IDR for example)
-  const SOL_TO_IDR = 2300000
+  // Real-time fallback (matches other pages)
+  const SOL_TO_IDR = 2450000
 
   useEffect(() => {
     if (!publicKey || !connected) {
@@ -50,8 +50,8 @@ export default function BalanceCard() {
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
         
         <div className="relative z-10">
-          <p className="text-white/80 text-[12px] font-semibold mb-1">Total Balance</p>
-          <h1 className="text-white text-[24px] font-bold mb-1 leading-tight">
+          <p className="text-white/70 text-[11px] font-bold uppercase tracking-widest mb-1">Total Balance</p>
+          <h1 className="text-white text-[28px] font-bold mb-1 leading-tight tracking-tight">
             {loading ? '...' : `Rp ${idrBalance}`}
           </h1>
           <div className="flex items-center gap-1.5">
@@ -60,7 +60,7 @@ export default function BalanceCard() {
               className="w-4 h-4 brightness-0 invert" 
               src="https://cryptologos.cc/logos/solana-sol-logo.png?v=024" 
             />
-            <span className="text-white/90 text-[14px]">
+            <span className="text-white/80 text-[13px] font-medium">
               ≈ {balance !== null ? balance.toFixed(4) : '0.0000'} SOL
             </span>
           </div>

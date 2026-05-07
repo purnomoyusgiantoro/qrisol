@@ -18,28 +18,28 @@ export default function Home() {
         <BalanceCard />
 
         {/* Quick Insights / Recent Activity */}
-        <section className="animate-fade-in-up mt-stack-lg" style={{ animationDelay: '0.2s' }}>
-          <div className="flex justify-between items-center mb-stack-sm">
-            <h2 className="text-label-sm font-bold text-on-surface-variant uppercase tracking-wider">Recent Activity</h2>
-            <button className="text-primary text-label-sm font-bold">See All</button>
+        <section className="animate-fade-in-up mt-8" style={{ animationDelay: '0.2s' }}>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Recent Activity</h2>
+            <button className="text-primary text-[11px] font-bold">View History</button>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {transactions.map((tx) => (
               <div 
                 key={tx.id} 
-                className="flex items-center gap-4 p-3 bg-white rounded-xl border border-outline-variant/30 shadow-sm hover:bg-surface-container-low transition-all cursor-pointer active:scale-[0.98]"
+                className="flex items-center gap-3.5 p-3.5 bg-white rounded-2xl border border-outline-variant/20 shadow-sm hover:bg-surface-container-low transition-all cursor-pointer active:scale-[0.98]"
               >
-                <div className="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
-                  <span className="material-symbols-outlined !text-[20px] fill-icon">check_circle</span>
+                <div className="w-9 h-9 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined !text-[18px] fill-icon">history</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-body-base font-bold text-on-surface">{tx.name}</p>
-                  <p className="text-caption text-on-surface-variant">{tx.date}</p>
+                  <p className="text-[13px] font-bold text-on-surface leading-tight">{tx.name}</p>
+                  <p className="text-[11px] text-on-surface-variant mt-0.5">{tx.date}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-body-base font-bold text-on-surface">{tx.amount}</p>
-                  <span className="text-[10px] text-tertiary font-bold px-2 py-0.5 bg-tertiary/10 rounded-full">
+                  <p className="text-[13px] font-bold text-on-surface leading-tight">{tx.amount}</p>
+                  <span className="text-[9px] text-success font-bold px-2 py-0.5 bg-success/5 rounded-full uppercase mt-1 inline-block">
                     {tx.status}
                   </span>
                 </div>
@@ -47,6 +47,7 @@ export default function Home() {
             ))}
           </div>
         </section>
+
 
         {!connected && (
           <div className="mt-8 p-4 bg-primary-container/10 rounded-xl text-center border border-primary-container/20 border-dashed">

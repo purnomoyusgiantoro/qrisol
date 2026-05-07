@@ -24,7 +24,7 @@ export default function BottomNav() {
       {/* SCAN FAB: Center Tab */}
       <div className="relative -top-4">
         <button 
-          onClick={() => navigate('/partner-select')}
+          onClick={() => navigate('/scan')}
           className="w-16 h-16 bg-primary text-white rounded-2xl flex flex-col items-center justify-center shadow-[0px_8px_20px_rgba(0,62,199,0.3)] active:scale-90 transition-transform gap-0.5"
         >
           <span className="material-symbols-outlined !text-[28px]">qr_code_scanner</span>

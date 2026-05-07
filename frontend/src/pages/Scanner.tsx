@@ -14,19 +14,34 @@ export default function Scanner() {
   const startCamera = useCallback(async () => {
     try {
       setError(null)
+      
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not supported or blocked by insecure context (needs HTTPS or localhost)')
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
       })
+      
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
+        // Force play to ensure it starts
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(e => console.error("Video play failed", e))
+        }
         setCameraActive(true)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Camera error:', err)
-      setError('Failed to access camera. Use the upload feature below.')
+      setError(err.message || 'Failed to access camera. Please check permissions.')
     }
   }, [])
+
 
   useEffect(() => {
     startCamera()
@@ -94,22 +109,38 @@ export default function Scanner() {
           <div className="flex-1 bg-black/60" />
           <div className="flex h-64">
             <div className="flex-1 bg-black/60" />
-            <div className="w-64 h-64 relative border-2 border-white/20 rounded-2xl">
-              <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl" />
-              <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl" />
-              <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl" />
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl" />
-              <div className="scanner-line !bg-primary !shadow-primary/50" />
-              <div className="absolute inset-0 cursor-pointer" onClick={() => processQR('camera_stream')} />
+            <div className="w-64 h-64 relative border-2 border-white/20 rounded-2xl overflow-hidden">
+              {error ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-error/20 text-center">
+                  <span className="material-symbols-outlined text-error mb-2">videocam_off</span>
+                  <p className="text-[10px] text-white font-bold leading-tight">{error}</p>
+                  <button 
+                    onClick={() => startCamera()}
+                    className="mt-2 px-3 py-1 bg-white/20 rounded-lg text-[10px] font-bold text-white active:scale-95"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl" />
+                  <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl" />
+                  <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl" />
+                  <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl" />
+                  <div className="scanner-line !bg-primary !shadow-primary/50" />
+                  <div className="absolute inset-0 cursor-pointer" onClick={() => processQR('camera_stream')} />
+                </>
+              )}
             </div>
             <div className="flex-1 bg-black/60" />
           </div>
           <div className="flex-1 bg-black/60 pt-8 flex flex-col items-center">
             <p className="text-white text-caption text-center px-10 opacity-80">
-              Position the QR code inside the frame
+              {error ? 'Please use manual upload' : 'Position the QR code inside the frame'}
             </p>
           </div>
         </div>
+
       </div>
 
       {/* Footer Controls */}
