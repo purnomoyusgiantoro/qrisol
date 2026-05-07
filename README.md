@@ -66,8 +66,6 @@ Developed by **Team QRISol** for the **Colosseum Frontier Hackathon 2026**.
 
 **Team Members:**
 *   **Purnomo** (Lead Dev & Blockchain)
-*   **Indra** (UI/UX Designer)
-*   **Fajar** (Backend & AI)
 
 ---
 *Note: This project is currently running on Solana Devnet. Ensure your wallet is connected to Devnet before testing.*
