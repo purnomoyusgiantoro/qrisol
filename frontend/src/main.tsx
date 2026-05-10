@@ -12,15 +12,25 @@ import {
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom'
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
+import { SolanaMobileWalletAdapter, createDefaultAuthorizationResultCache, createDefaultAddressSelector, createDefaultWalletNotFoundHandler } from '@solana-mobile/wallet-adapter-mobile'
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { clusterApiUrl } from '@solana/web3.js'
 import App from './App'
 import './index.css'
 import '@solana/wallet-adapter-react-ui/styles.css'
 
 // Use Devnet for development — switch to mainnet-beta for production
-const endpoint = clusterApiUrl('devnet')
+const network = WalletAdapterNetwork.Devnet
+const endpoint = clusterApiUrl(network)
 
 const wallets = [
+  new SolanaMobileWalletAdapter({
+    addressSelector: createDefaultAddressSelector(),
+    appIdentity: { name: 'QRISol', icon: 'favicon.ico' },
+    authorizationResultCache: createDefaultAuthorizationResultCache(),
+    cluster: network,
+    onWalletNotFound: createDefaultWalletNotFoundHandler(),
+  }),
   new PhantomWalletAdapter(),
   new SolflareWalletAdapter(),
 ]
