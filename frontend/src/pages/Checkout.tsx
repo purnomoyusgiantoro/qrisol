@@ -25,18 +25,19 @@ export default function Checkout() {
   const { connection } = useConnection()
   const { publicKey, sendTransaction } = useWallet()
   
-  const [processing, setProcessing] = useState(false)
-  const [loadingPrice, setLoadingPrice] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [solPrice, setSolPrice] = useState<number>(2450000) 
-  const [selectedPartner, setSelectedPartner] = useState<{name: string, fee: string}>({ name: 'Tokocrypto', fee: '0.1%' })
-
   const qrisData: QRISData = location.state || {
     merchantName: 'Blessing Grocery Store',
     merchantId: 'ID2024081200001',
     amount: 50000,
     currency: 'IDR',
   }
+
+  const [processing, setProcessing] = useState(false)
+  const [loadingPrice, setLoadingPrice] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [solPrice, setSolPrice] = useState<number>(2450000) 
+  const [selectedPartner, setSelectedPartner] = useState<{name: string, fee: string}>({ name: 'Tokocrypto', fee: '0.1%' })
+  const [inputAmount, setInputAmount] = useState<number>(qrisData.amount || 0)
 
   useEffect(() => {
     const fetchPriceAndRoute = async () => {
@@ -67,10 +68,15 @@ export default function Checkout() {
     fetchPriceAndRoute()
   }, [])
 
-  const solAmount = qrisData.amount / solPrice
+  const solAmount = inputAmount / solPrice
 
   const handlePayment = async () => {
     if (!publicKey) return
+    if (inputAmount <= 0) {
+      setError("Masukkan jumlah pembayaran yang valid")
+      return
+    }
+
     setProcessing(true)
     setError(null)
 
@@ -99,7 +105,7 @@ export default function Checkout() {
       navigate('/success', {
         state: {
           merchantName: qrisData.merchantName,
-          amount: qrisData.amount,
+          amount: inputAmount,
           solAmount: solAmount,
           txHash: signature,
           partner: selectedPartner.name
@@ -128,7 +134,7 @@ export default function Checkout() {
 
       <main className="flex-1 overflow-y-auto px-margin-edge py-6 flex flex-col gap-5">
         {error && (
-          <div className="p-3 bg-error/5 border border-error/10 rounded-xl text-error text-[11px] font-bold">
+          <div className="p-3 bg-error/5 border border-error/10 rounded-xl text-error text-[11px] font-bold text-center">
             {error}
           </div>
         )}
@@ -146,7 +152,21 @@ export default function Checkout() {
         <section className="bg-white rounded-[28px] p-6 border border-outline-variant/30 shadow-sm flex flex-col gap-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <div className="text-center">
             <p className="text-[11px] font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Payment Amount</p>
-            <h3 className="text-[22px] font-bold text-primary tracking-tight">Rp {qrisData.amount.toLocaleString('id-ID')}</h3>
+            {qrisData.amount > 0 ? (
+              <h3 className="text-[22px] font-bold text-primary tracking-tight">Rp {qrisData.amount.toLocaleString('id-ID')}</h3>
+            ) : (
+              <div className="flex items-center justify-center gap-2 mt-2">
+                <span className="text-[18px] font-bold text-on-surface-variant">Rp</span>
+                <input 
+                  type="number" 
+                  value={inputAmount || ''}
+                  onChange={(e) => setInputAmount(Number(e.target.value))}
+                  placeholder="0"
+                  className="w-32 text-[24px] font-bold text-primary text-center bg-transparent border-b-2 border-primary/30 focus:border-primary outline-none"
+                  autoFocus
+                />
+              </div>
+            )}
           </div>
           
           <div className="border-t border-dashed border-outline-variant/30 my-1"></div>
@@ -204,9 +224,9 @@ export default function Checkout() {
 
         <button 
           onClick={handlePayment}
-          disabled={processing || !publicKey}
+          disabled={processing || !publicKey || inputAmount <= 0}
           className={`w-full h-14 solana-gradient rounded-2xl flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all relative overflow-hidden group ${
-            (processing || !publicKey) ? 'opacity-50 grayscale cursor-not-allowed' : ''
+            (processing || !publicKey || inputAmount <= 0) ? 'opacity-50 grayscale cursor-not-allowed' : ''
           }`}
         >
           {processing ? (
