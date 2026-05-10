@@ -81,6 +81,9 @@ export default function Checkout() {
     setError(null)
 
     try {
+      // Fetch recent blockhash first for Mobile Wallet Adapter compatibility
+      const latestBlockhash = await connection.getLatestBlockhash()
+
       // Build real transaction
       const destination = new PublicKey(DEVNET_MERCHANT_WALLET)
       const lamports = Math.floor(solAmount * LAMPORTS_PER_SOL)
@@ -93,10 +96,13 @@ export default function Checkout() {
         })
       )
 
+      // Explicitly set feePayer and recentBlockhash (Required for Mobile wallets)
+      transaction.feePayer = publicKey
+      transaction.recentBlockhash = latestBlockhash.blockhash
+
       const signature = await sendTransaction(transaction, connection)
       
       // Wait for confirmation
-      const latestBlockhash = await connection.getLatestBlockhash()
       await connection.confirmTransaction({
         signature,
         ...latestBlockhash
