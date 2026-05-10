@@ -26,7 +26,11 @@ const endpoint = clusterApiUrl(network)
 const wallets = [
   new SolanaMobileWalletAdapter({
     addressSelector: createDefaultAddressSelector(),
-    appIdentity: { name: 'QRISol', icon: 'favicon.ico' },
+    appIdentity: { 
+      name: 'QRISol', 
+      uri: window.location.origin, 
+      icon: 'favicon.ico' 
+    },
     authorizationResultCache: createDefaultAuthorizationResultCache(),
     cluster: network,
     onWalletNotFound: createDefaultWalletNotFoundHandler(),
