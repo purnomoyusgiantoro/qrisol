@@ -3,9 +3,10 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useState, useEffect } from 'react'
 import { 
   PublicKey, 
-  Transaction, 
   SystemProgram, 
-  LAMPORTS_PER_SOL 
+  LAMPORTS_PER_SOL,
+  TransactionMessage,
+  VersionedTransaction
 } from '@solana/web3.js'
 import { getSOLPriceIDRService } from '../services/solana'
 
@@ -88,17 +89,20 @@ export default function Checkout() {
       const destination = new PublicKey(DEVNET_MERCHANT_WALLET)
       const lamports = Math.floor(solAmount * LAMPORTS_PER_SOL)
 
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: destination,
-          lamports: lamports,
-        })
-      )
+      // Use VersionedTransaction for better compatibility with MWA
+      const messageV0 = new TransactionMessage({
+        payerKey: publicKey,
+        recentBlockhash: latestBlockhash.blockhash,
+        instructions: [
+          SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: destination,
+            lamports: lamports,
+          })
+        ]
+      }).compileToV0Message()
 
-      // Explicitly set feePayer and recentBlockhash (Required for Mobile wallets)
-      transaction.feePayer = publicKey
-      transaction.recentBlockhash = latestBlockhash.blockhash
+      const transaction = new VersionedTransaction(messageV0)
 
       const signature = await sendTransaction(transaction, connection)
       
