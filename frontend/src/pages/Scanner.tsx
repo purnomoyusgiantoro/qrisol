@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useRef, useEffect, useCallback } from 'react'
+import jsQR from 'jsqr'
+import { parseQRIS } from '../utils/qris-parser'
 
 export default function Scanner() {
   const navigate = useNavigate()
@@ -8,7 +10,14 @@ export default function Scanner() {
   const [cameraActive, setCameraActive] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
   const streamRef = useRef<MediaStream | null>(null)
+  const animationFrameId = useRef<number | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
+  useEffect(() => {
+    canvasRef.current = document.createElement('canvas')
+  }, [])
 
   // Start camera automatically
   const startCamera = useCallback(async () => {
@@ -33,6 +42,8 @@ export default function Scanner() {
         // Force play to ensure it starts
         videoRef.current.onloadedmetadata = () => {
           videoRef.current?.play().catch(e => console.error("Video play failed", e))
+          // Start scanning loop
+          requestAnimationFrame(scanQRCode)
         }
         setCameraActive(true)
       }
@@ -42,34 +53,125 @@ export default function Scanner() {
     }
   }, [])
 
+  const scanQRCode = () => {
+    if (videoRef.current && canvasRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+      const video = videoRef.current
+      const canvas = canvasRef.current
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })
+
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        })
+
+        if (code) {
+          console.log("Found QR code", code.data)
+          handleQRData(code.data)
+          return // Stop scanning loop on success
+        }
+      }
+    }
+    
+    // Continue scanning if not found
+    animationFrameId.current = requestAnimationFrame(scanQRCode)
+  }
+
+  const stopCamera = useCallback(() => {
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current)
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+    }
+  }, [])
 
   useEffect(() => {
     startCamera()
     return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop())
-      }
+      stopCamera()
     }
-  }, [startCamera])
+  }, [startCamera, stopCamera])
 
-  // System Integration: Call Backend to "Parse" QRIS
-  const processQR = async (source: string) => {
+  const handleQRData = (data: string) => {
+    stopCamera()
     setLoading(true)
+    
+    setTimeout(() => {
+      try {
+        const parsedData = parseQRIS(data)
+        
+        // Simple check if it resembles QRIS
+        if (parsedData && parsedData.merchantName !== 'Unknown Merchant') {
+          navigate('/checkout', { state: parsedData })
+        } else {
+          alert("Kode QR tidak valid atau bukan format QRIS standar.")
+          setLoading(false)
+          startCamera() // restart camera
+        }
+      } catch (err) {
+        console.error('Parsing error:', err)
+        alert("Gagal memproses data QRIS.")
+        setLoading(false)
+        startCamera()
+      }
+    }, 500) // Small delay for UX
+  }
+
+  // Handle manual file upload
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setLoading(true)
+    stopCamera()
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = img.width
+        canvas.height = img.height
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          })
+          
+          if (code) {
+            handleQRData(code.data)
+          } else {
+            alert('Tidak ditemukan kode QR pada gambar.')
+            setLoading(false)
+            startCamera()
+          }
+        }
+      }
+      img.src = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  }
+
+  // Fallback simulation if clicked on viewfinder directly
+  const simulateScan = async () => {
+    setLoading(true)
+    stopCamera()
     try {
       const response = await fetch('/api/parse-qris', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl: source }),
+        body: JSON.stringify({ imageUrl: 'simulated' }),
       })
       const data = await response.json()
-      
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop())
-      }
-
       navigate('/checkout', { state: data })
     } catch (err) {
-      console.error('Processing error:', err)
+      console.error('Simulation error:', err)
       navigate('/checkout', { 
         state: { 
           merchantName: 'Toko Kelontong Berkah (Fallback)', 
@@ -128,7 +230,7 @@ export default function Scanner() {
                   <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl" />
                   <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl" />
                   <div className="scanner-line !bg-primary !shadow-primary/50" />
-                  <div className="absolute inset-0 cursor-pointer" onClick={() => processQR('camera_stream')} />
+                  <div className="absolute inset-0 cursor-pointer" onClick={simulateScan} title="Click to simulate scan" />
                 </>
               )}
             </div>
@@ -136,7 +238,7 @@ export default function Scanner() {
           </div>
           <div className="flex-1 bg-black/60 pt-8 flex flex-col items-center">
             <p className="text-white text-caption text-center px-10 opacity-80">
-              {error ? 'Please use manual upload' : 'Position the QR code inside the frame'}
+              {error ? 'Gunakan upload manual' : 'Arahkan kode QR ke dalam area bingkai'}
             </p>
           </div>
         </div>
@@ -150,7 +252,7 @@ export default function Scanner() {
           type="file"
           accept="image/*"
           className="hidden"
-          onChange={() => processQR('uploaded_file')}
+          onChange={handleFileUpload}
         />
         
         <button 
@@ -166,7 +268,7 @@ export default function Scanner() {
       {loading && (
         <div className="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center text-white">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="font-bold">Extracting QRIS data...</p>
+          <p className="font-bold">Mengekstrak data QRIS...</p>
         </div>
       )}
     </div>
